@@ -45,6 +45,12 @@ namespace Updater
 
         private static bool CheckIfNeedToUpdate(string programToExecute, string directoryToCheckForUpdates)
         {
+            //if the program to update isn't local return true so its copied
+            if (!File.Exists(programToExecute))
+            {
+                return true;
+            }
+
             bool newer = false;
             string remoteFilePath = Path.Combine(directoryToCheckForUpdates, programToExecute);
 
