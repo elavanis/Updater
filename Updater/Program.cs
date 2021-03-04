@@ -22,6 +22,16 @@ namespace Updater
                     UpdateFiles(directoryToCheckForUpdates);
                 }
             }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+
+                Console.WriteLine("Press enter to continue");
+                Console.ReadLine();
+            }
+
             finally
             {
                 Process.Start(programToExecute);
