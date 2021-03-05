@@ -67,7 +67,7 @@ namespace Updater
             FileInfo existingFile = new FileInfo(programToExecute);
             FileInfo remoteFile = new FileInfo(remoteFilePath);
 
-            if (remoteFile.CreationTimeUtc > existingFile.CreationTimeUtc)
+            if (remoteFile.LastWriteTimeUtc > existingFile.LastWriteTimeUtc)
             {
                 newer = true;
             }
