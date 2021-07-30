@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
 namespace Updater
 {
@@ -17,10 +18,16 @@ namespace Updater
 
                 bool newer = CheckIfNeedToUpdate(programToExecute, directoryToCheckForUpdates);
 
-                if (newer == true)
+                if (newer == true || bool.Parse(AppContext.GetData("AlwaysCopy").ToString()))
                 {
                     UpdateFiles(directoryToCheckForUpdates);
                 }
+                else
+                {
+                    Console.WriteLine("No update");
+                }
+
+                Thread.Sleep(5000);
             }
 
             catch (Exception ex)
@@ -48,6 +55,7 @@ namespace Updater
                 string localFile = Path.GetFileName(remoteFile);
                 if (!filesToExclude.Contains(localFile))
                 {
+                    Console.WriteLine($"Copying {remoteFile}");
                     File.Copy(remoteFile, localFile, true);
                 }
             }
@@ -58,6 +66,8 @@ namespace Updater
             //if the program to update isn't local return true so its copied
             if (!File.Exists(programToExecute))
             {
+                Console.WriteLine("Didn't Exist");
+
                 return true;
             }
 
@@ -69,6 +79,7 @@ namespace Updater
 
             if (remoteFile.LastWriteTimeUtc > existingFile.LastWriteTimeUtc)
             {
+                Console.WriteLine("Newer");
                 newer = true;
             }
 

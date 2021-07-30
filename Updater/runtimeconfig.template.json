@@ -2,7 +2,7 @@
   "configProperties": {
     "ProgramToExecute": "ForceComputerSleep.exe",
     "DirectoryToCheckForUpdates": "\\\\FREENAS\\Vol1\\Data\\Nas\\Code\\ForceComputerToSleep\\ForceComputerSleep\\bin\\Release",
-    "FilesToExclude": ""
-
+    "FilesToExclude": "",
+    "AlwaysCopy": "true"
   }
 }
