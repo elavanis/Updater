@@ -12,7 +12,7 @@ namespace Updater
         {
             HashSet<string> filesToExclude = new HashSet<string>(AppContext.GetData("FilesToExclude").ToString().Split(','));
             string directoryToCheckForUpdates = AppContext.GetData("DirectoryToCheckForUpdates").ToString();
-            bool copyAlways = bool.Parse(AppContext.GetData("AlwaysCopy").ToString();
+            bool copyAlways = bool.Parse(AppContext.GetData("AlwaysCopy").ToString());
 
             string[] files = Directory.GetFiles(directoryToCheckForUpdates);
             foreach (string remoteFile in files)
