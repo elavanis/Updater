@@ -10,80 +10,50 @@ namespace Updater
     {
         static void Main(string[] args)
         {
-            string programToExecute = AppContext.GetData("ProgramToExecute").ToString();
-
-            try
-            {
-                string directoryToCheckForUpdates = AppContext.GetData("DirectoryToCheckForUpdates").ToString();
-
-                bool newer = CheckIfNeedToUpdate(programToExecute, directoryToCheckForUpdates);
-
-                if (newer == true || bool.Parse(AppContext.GetData("AlwaysCopy").ToString()))
-                {
-                    UpdateFiles(directoryToCheckForUpdates);
-                }
-                else
-                {
-                    Console.WriteLine("No update");
-                }
-
-                Thread.Sleep(5000);
-            }
-
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-
-                Console.WriteLine("Press enter to continue");
-                Console.ReadLine();
-            }
-
-            finally
-            {
-                Process.Start(programToExecute);
-            }
-        }
-
-        private static void UpdateFiles(string directoryToCheckForUpdates)
-        {
             HashSet<string> filesToExclude = new HashSet<string>(AppContext.GetData("FilesToExclude").ToString().Split(','));
+            string directoryToCheckForUpdates = AppContext.GetData("DirectoryToCheckForUpdates").ToString();
+            bool copyAlways = bool.Parse(AppContext.GetData("AlwaysCopy").ToString();
 
             string[] files = Directory.GetFiles(directoryToCheckForUpdates);
             foreach (string remoteFile in files)
             {
-                string localFile = Path.GetFileName(remoteFile);
-                if (!filesToExclude.Contains(localFile))
+                if (copyAlways || CheckIfNeedToUpdate(filesToExclude, remoteFile))
                 {
-                    Console.WriteLine($"Copying {remoteFile}");
-                    File.Copy(remoteFile, localFile, true);
+                    CopyRemoteFileLocal(remoteFile);
                 }
             }
         }
 
-        private static bool CheckIfNeedToUpdate(string programToExecute, string directoryToCheckForUpdates)
+        private static void CopyRemoteFileLocal(string remoteFile)
         {
-            //if the program to update isn't local return true so its copied
-            if (!File.Exists(programToExecute))
-            {
-                Console.WriteLine("Didn't Exist");
+            string localFile = Path.GetFileName(remoteFile);
+            Console.WriteLine($"Copying {remoteFile}");
+            File.Copy(remoteFile, localFile, true);
+        }
 
+        private static bool CheckIfNeedToUpdate(HashSet<string> filesToExclude, string remoteFile)
+        {
+            string localFile = Path.GetFileName(remoteFile);
+
+            if (filesToExclude.Contains(localFile))
+            {
+                return false;
+            }
+
+            if (!File.Exists(localFile))
+            {
                 return true;
             }
 
-            bool newer = false;
-            string remoteFilePath = Path.Combine(directoryToCheckForUpdates, programToExecute);
+            FileInfo localFileInfo = new FileInfo(localFile);
+            FileInfo remoteFileInfo = new FileInfo(remoteFile);
 
-            FileInfo existingFile = new FileInfo(programToExecute);
-            FileInfo remoteFile = new FileInfo(remoteFilePath);
-
-            if (remoteFile.LastWriteTimeUtc > existingFile.LastWriteTimeUtc)
+            if (remoteFileInfo.LastWriteTimeUtc > localFileInfo.LastWriteTimeUtc)
             {
-                Console.WriteLine("Newer");
-                newer = true;
+                return true;
             }
 
-            return newer;
+            return false;
         }
     }
 }
