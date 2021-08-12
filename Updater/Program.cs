@@ -10,18 +10,37 @@ namespace Updater
     {
         static void Main(string[] args)
         {
-            HashSet<string> filesToExclude = new HashSet<string>(AppContext.GetData("FilesToExclude").ToString().Split(','));
-            string directoryToCheckForUpdates = AppContext.GetData("DirectoryToCheckForUpdates").ToString();
-            bool copyAlways = bool.Parse(AppContext.GetData("AlwaysCopy").ToString());
-
-            string[] files = Directory.GetFiles(directoryToCheckForUpdates);
-            foreach (string remoteFile in files)
+            string programToExecute = AppContext.GetData("ProgramToExecute").ToString();
+            try
             {
-                if (copyAlways || CheckIfNeedToUpdate(filesToExclude, remoteFile))
+                HashSet<string> filesToExclude = new HashSet<string>(AppContext.GetData("FilesToExclude").ToString().Split(','));
+                string directoryToCheckForUpdates = AppContext.GetData("DirectoryToCheckForUpdates").ToString();
+                bool copyAlways = bool.Parse(AppContext.GetData("AlwaysCopy").ToString());
+
+                string[] files = Directory.GetFiles(directoryToCheckForUpdates);
+                foreach (string remoteFile in files)
                 {
-                    CopyRemoteFileLocal(remoteFile);
+                    if (copyAlways || CheckIfNeedToUpdate(filesToExclude, remoteFile))
+                    {
+                        CopyRemoteFileLocal(remoteFile);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+
+                Console.WriteLine("Press enter to continue");
+                Console.ReadLine();
+            }
+
+            finally
+            {
+                Process.Start(programToExecute);
+            }
+
+
         }
 
         private static void CopyRemoteFileLocal(string remoteFile)
