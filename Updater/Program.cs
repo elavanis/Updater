@@ -11,6 +11,7 @@ namespace Updater
         static void Main(string[] args)
         {
             string programToExecute = AppContext.GetData("ProgramToExecute").ToString();
+            string executionFlags = AppContext.GetData("ExecutionFlags").ToString();
             try
             {
                 HashSet<string> filesToExclude = new HashSet<string>(AppContext.GetData("FilesToExclude").ToString().Split(','));
@@ -37,10 +38,8 @@ namespace Updater
 
             finally
             {
-                Process.Start(programToExecute);
+                Process.Start(programToExecute, executionFlags);
             }
-
-
         }
 
         private static void CopyRemoteFileLocal(string remoteFile)
